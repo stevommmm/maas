@@ -60,7 +60,7 @@ func (app *App) render(w io.Writer, lineOne string, lineTwo string) {
 }
 
 func (app *App) index(w http.ResponseWriter, req *http.Request) {
-	log.Println("%s %s from %s", req.Method, req.RequestURI, req.RemoteAddr)
+	log.Printf("%s %s from %s\n", req.Method, req.RequestURI, req.RemoteAddr)
 	w.Header().Set("Content-Type", "image/png")
 
 	lone := req.FormValue("one")
