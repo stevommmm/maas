@@ -1,12 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"image"
 	"image/png"
 	"io"
 	"log"
 	"net/http"
-	"bytes"
 
 	"github.com/fogleman/gg"
 	"github.com/golang/freetype/truetype"
@@ -18,6 +18,9 @@ import (
 
 //go:embed "template.png"
 var rawImage []byte
+
+//go:embed "index.html"
+var rawIndex []byte
 
 type App struct {
 	ff font.Face
@@ -61,12 +64,18 @@ func (app *App) render(w io.Writer, lineOne string, lineTwo string) {
 
 func (app *App) index(w http.ResponseWriter, req *http.Request) {
 	log.Printf("%s %s from %s\n", req.Method, req.RequestURI, req.RemoteAddr)
-	w.Header().Set("Content-Type", "image/png")
 
-	lone := req.FormValue("one")
-	ltwo := req.FormValue("two")
 
-	app.render(w, lone, ltwo)
+	lone := req.FormValue("l1")
+	ltwo := req.FormValue("l2")
+
+	if lone == "" && ltwo == "" {
+		w.Header().Set("Content-Type", "text/html")
+		w.Write(rawIndex)
+	} else {
+		w.Header().Set("Content-Type", "image/png")
+		app.render(w, lone, ltwo)
+	}
 }
 
 func main() {
